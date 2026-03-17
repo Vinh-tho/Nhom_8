@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'data/repositories/auth_repository.dart';
+import 'core/providers/repository_providers.dart';
 import 'presentation/auth/auth_screen.dart';
 import 'presentation/auth/form/form_cubit.dart';
 import 'presentation/auth/login/login_bloc.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => FormCubit()),
-        BlocProvider(create: (_) => LoginBloc(AuthRepository())),
+        BlocProvider(
+          create: (_) => LoginBloc(ref.read(authRepositoryProvider)),
+        ),
       ],
       child: MaterialApp(
         title: 'Shopping Cart Demo',
@@ -43,9 +46,7 @@ class MyApp extends StatelessWidget {
           ),
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
         home: const AuthScreen(),

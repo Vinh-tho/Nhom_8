@@ -8,15 +8,8 @@ import 'login/login_event.dart';
 import 'login/login_state.dart';
 
 /// AuthScreen - Giao diện Đăng nhập/Đăng ký hiện đại
-class AuthScreen extends StatefulWidget {
+class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
-
-  @override
-  State<AuthScreen> createState() => _AuthScreenState();
-}
-
-class _AuthScreenState extends State<AuthScreen> {
-  bool _isLogin = true;
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +26,7 @@ class _AuthScreenState extends State<AuthScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: isDark
-                ? [
-                    colorScheme.surface,
-                    colorScheme.surface.withOpacity(0.95),
-                  ]
+                ? [colorScheme.surface, colorScheme.surface.withOpacity(0.95)]
                 : [
                     colorScheme.primaryContainer.withOpacity(0.4),
                     colorScheme.secondaryContainer.withOpacity(0.3),
@@ -48,9 +38,7 @@ class _AuthScreenState extends State<AuthScreen> {
             listener: (context, state) {
               if (state is LoginSuccess) {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (_) => const HomeScreen(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
                 );
               }
             },
@@ -122,216 +110,203 @@ class _AuthScreenState extends State<AuthScreen> {
                               ),
                             ],
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              // Tab Đăng nhập / Đăng ký
-                              Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surfaceContainerHighest
-                                      .withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                child: Row(
-                                  children: [
-                                    _buildTab(
-                                      label: 'Đăng nhập',
-                                      selected: _isLogin,
-                                      onTap: () =>
-                                          setState(() => _isLogin = true),
-                                      colorScheme: colorScheme,
+                          child: BlocBuilder<FormCubit, AuthFormState>(
+                            builder: (context, formState) {
+                              final isLogin = formState.isLogin;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  // Tab Đăng nhập / Đăng ký
+                                  Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.surfaceContainerHighest
+                                          .withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(14),
                                     ),
-                                    _buildTab(
-                                      label: 'Đăng ký',
-                                      selected: !_isLogin,
-                                      onTap: () =>
-                                          setState(() => _isLogin = false),
-                                      colorScheme: colorScheme,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 28),
-
-                              // Form fields
-                              BlocBuilder<FormCubit, AuthFormState>(
-                                builder: (context, formState) {
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      _buildTextField(
-                                        context: context,
-                                        label: 'Email',
-                                        hint: 'email@example.com',
-                                        icon: Icons.email_outlined,
-                                        errorText: formState.emailError,
-                                        keyboardType:
-                                            TextInputType.emailAddress,
-                                        onChanged: context
-                                            .read<FormCubit>()
-                                            .emailChanged,
-                                      ),
-                                      const SizedBox(height: 20),
-                                      _buildTextField(
-                                        context: context,
-                                        label: 'Mật khẩu',
-                                        hint: 'Tối thiểu 6 ký tự',
-                                        icon: Icons.lock_outline_rounded,
-                                        errorText: formState.passwordError,
-                                        obscureText: true,
-                                        onChanged: context
-                                            .read<FormCubit>()
-                                            .passwordChanged,
-                                      ),
-                                      const SizedBox(height: 28),
-
-                                      // Error message
-                                      if (loginState is LoginFailure) ...[
-                                        _buildErrorCard(
-                                          context: context,
-                                          message: loginState.message,
+                                    child: Row(
+                                      children: [
+                                        _buildTab(
+                                          label: 'Đăng nhập',
+                                          selected: isLogin,
+                                          onTap: () => context
+                                              .read<FormCubit>()
+                                              .toggleAuthMode(),
+                                          colorScheme: colorScheme,
                                         ),
-                                        const SizedBox(height: 20),
+                                        _buildTab(
+                                          label: 'Đăng ký',
+                                          selected: !isLogin,
+                                          onTap: () => context
+                                              .read<FormCubit>()
+                                              .toggleAuthMode(),
+                                          colorScheme: colorScheme,
+                                        ),
                                       ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 28),
 
-                                      // Buttons
-                                      BlocBuilder<LoginBloc, LoginState>(
-                                        builder: (context, state) {
-                                          if (state is LoginLoading) {
-                                            return const SizedBox(
-                                              height: 56,
-                                              child: Center(
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              ),
-                                            );
-                                          }
-                                          return Column(
-                                            children: [
-                                              FilledButton(
-                                                onPressed: formState.isValid
-                                                    ? () => context
-                                                            .read<LoginBloc>()
-                                                            .add(_isLogin
-                                                                ? LoginRequested(
-                                                                    formState
-                                                                        .email,
-                                                                    formState
-                                                                        .password,
-                                                                  )
-                                                                : RegisterRequested(
-                                                                    formState
-                                                                        .email,
-                                                                    formState
-                                                                        .password,
-                                                                  ))
-                                                    : null,
-                                                style: FilledButton.styleFrom(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
+                                  // Form fields
+                                  _buildTextField(
+                                    context: context,
+                                    label: 'Email',
+                                    hint: 'email@example.com',
+                                    icon: Icons.email_outlined,
+                                    errorText: formState.emailError,
+                                    keyboardType: TextInputType.emailAddress,
+                                    onChanged: context
+                                        .read<FormCubit>()
+                                        .emailChanged,
+                                  ),
+                                  const SizedBox(height: 20),
+                                  _buildTextField(
+                                    context: context,
+                                    label: 'Mật khẩu',
+                                    hint: 'Tối thiểu 6 ký tự',
+                                    icon: Icons.lock_outline_rounded,
+                                    errorText: formState.passwordError,
+                                    obscureText: true,
+                                    onChanged: context
+                                        .read<FormCubit>()
+                                        .passwordChanged,
+                                  ),
+                                  const SizedBox(height: 28),
+
+                                  // Error message
+                                  if (loginState is LoginFailure) ...[
+                                    _buildErrorCard(
+                                      context: context,
+                                      message: loginState.message,
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
+
+                                  // Buttons
+                                  BlocBuilder<LoginBloc, LoginState>(
+                                    builder: (context, state) {
+                                      if (state is LoginLoading) {
+                                        return const SizedBox(
+                                          height: 56,
+                                          child: Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        );
+                                      }
+                                      return Column(
+                                        children: [
+                                          FilledButton(
+                                            onPressed: formState.isValid
+                                                ? () => context
+                                                      .read<LoginBloc>()
+                                                      .add(
+                                                        isLogin
+                                                            ? LoginRequested(
+                                                                formState.email,
+                                                                formState
+                                                                    .password,
+                                                              )
+                                                            : RegisterRequested(
+                                                                formState.email,
+                                                                formState
+                                                                    .password,
+                                                              ),
+                                                      )
+                                                : null,
+                                            style: FilledButton.styleFrom(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
                                                     vertical: 18,
                                                   ),
-                                                  shape:
-                                                      RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            14),
-                                                  ),
-                                                  elevation: 0,
-                                                ),
-                                                child: FittedBox(
-                                                  fit: BoxFit.scaleDown,
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.center,
-                                                    children: [
-                                                      Icon(
-                                                        _isLogin
-                                                            ? Icons.login_rounded
-                                                            : Icons
-                                                                .person_add_rounded,
-                                                        size: 22,
-                                                      ),
-                                                      const SizedBox(width: 12),
-                                                      Text(
-                                                        _isLogin
-                                                            ? 'Đăng nhập'
-                                                            : 'Tạo tài khoản',
-                                                        style: const TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                        ),
-                                                        overflow:
-                                                            TextOverflow.ellipsis,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
                                               ),
-                                              const SizedBox(height: 16),
-                                              Text(
-                                                formState.isValid
-                                                    ? 'Hoặc thử cách khác'
-                                                    : 'Vui lòng nhập đầy đủ thông tin',
-                                                style: theme
-                                                    .textTheme.bodySmall
-                                                    ?.copyWith(
+                                              elevation: 0,
+                                            ),
+                                            child: FittedBox(
+                                              fit: BoxFit.scaleDown,
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    isLogin
+                                                        ? Icons.login_rounded
+                                                        : Icons
+                                                              .person_add_rounded,
+                                                    size: 22,
+                                                  ),
+                                                  const SizedBox(width: 12),
+                                                  Text(
+                                                    isLogin
+                                                        ? 'Đăng nhập'
+                                                        : 'Tạo tài khoản',
+                                                    style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            formState.isValid
+                                                ? 'Hoặc thử cách khác'
+                                                : 'Vui lòng nhập đầy đủ thông tin',
+                                            style: theme.textTheme.bodySmall
+                                                ?.copyWith(
                                                   color: colorScheme
                                                       .onSurfaceVariant
                                                       .withOpacity(0.7),
                                                 ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              if (formState.isValid)
-                                                const SizedBox(height: 12),
-                                              if (formState.isValid)
-                                                OutlinedButton(
-                                                  onPressed: () => context
-                                                      .read<LoginBloc>()
-                                                      .add(_isLogin
-                                                          ? RegisterRequested(
-                                                              formState.email,
-                                                              formState
-                                                                  .password,
-                                                            )
-                                                          : LoginRequested(
-                                                              formState.email,
-                                                              formState
-                                                                  .password,
-                                                            )),
-                                                  style: OutlinedButton.styleFrom(
-                                                    padding:
-                                                        const EdgeInsets
-                                                            .symmetric(
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          if (formState.isValid)
+                                            const SizedBox(height: 12),
+                                          if (formState.isValid)
+                                            OutlinedButton(
+                                              onPressed: () =>
+                                                  context.read<LoginBloc>().add(
+                                                    isLogin
+                                                        ? RegisterRequested(
+                                                            formState.email,
+                                                            formState.password,
+                                                          )
+                                                        : LoginRequested(
+                                                            formState.email,
+                                                            formState.password,
+                                                          ),
+                                                  ),
+                                              style: OutlinedButton.styleFrom(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
                                                       vertical: 16,
                                                     ),
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius
-                                                              .circular(14),
-                                                    ),
-                                                  ),
-                                                  child: Text(
-                                                    _isLogin
-                                                        ? 'Chưa có tài khoản? Đăng ký'
-                                                        : 'Đã có tài khoản? Đăng nhập',
-                                                  ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
                                                 ),
-                                            ],
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ],
+                                              ),
+                                              child: Text(
+                                                isLogin
+                                                    ? 'Chưa có tài khoản? Đăng ký'
+                                                    : 'Đã có tài khoản? Đăng nhập',
+                                              ),
+                                            ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(height: 40),
@@ -463,9 +438,7 @@ class _AuthScreenState extends State<AuthScreen> {
       decoration: BoxDecoration(
         color: colorScheme.errorContainer.withOpacity(0.8),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: colorScheme.error.withOpacity(0.3),
-        ),
+        border: Border.all(color: colorScheme.error.withOpacity(0.3)),
       ),
       child: Row(
         children: [

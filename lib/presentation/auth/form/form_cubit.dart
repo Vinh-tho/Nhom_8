@@ -22,4 +22,14 @@ class FormCubit extends Cubit<AuthFormState> {
   void reset() {
     emit(const AuthFormState());
   }
+
+  void toggleAuthMode() {
+    emit(
+      state.copyWith(
+        isLogin: !state.isLogin,
+        emailError: null,
+        passwordError: null,
+      ),
+    );
+  }
 }

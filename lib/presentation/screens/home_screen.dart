@@ -1,27 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/navigation_provider.dart';
 import '../widgets/cart_icon_widget.dart';
 import 'product_list_screen.dart';
 import 'cart_screen.dart';
 
 /// HomeScreen - Màn hình chính sau đăng nhập (2 tab: Sản phẩm, Giỏ hàng)
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
-
-  final List<Widget> _screens = [
-    const ProductListScreen(),
-    const CartScreen(),
-  ];
+  static const List<Widget> _screens = [ProductListScreen(), CartScreen()];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentIndex = ref.watch(navigationIndexProvider);
     final width = MediaQuery.of(context).size.width;
     final isWide = width >= 768 || (kIsWeb && width >= 600);
 
@@ -54,28 +47,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primaryContainer,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
                               Icons.shopping_bag_rounded,
                               size: 28,
-                              color:
-                                  Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               'ShopCart',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
                         ],
@@ -86,15 +74,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.store_outlined,
                       selectedIcon: Icons.store_rounded,
                       label: 'Sản phẩm',
-                      selected: _currentIndex == 0,
-                      onTap: () => setState(() => _currentIndex = 0),
+                      selected: currentIndex == 0,
+                      onTap: () =>
+                          ref.read(navigationIndexProvider.notifier).state = 0,
                     ),
                     _NavItem(
                       icon: Icons.shopping_cart_outlined,
                       selectedIcon: Icons.shopping_cart_rounded,
                       label: 'Giỏ hàng',
-                      selected: _currentIndex == 1,
-                      onTap: () => setState(() => _currentIndex = 1),
+                      selected: currentIndex == 1,
+                      onTap: () =>
+                          ref.read(navigationIndexProvider.notifier).state = 1,
                     ),
                   ],
                 ),
@@ -128,35 +118,29 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (!isWide)
                             Text(
                               '🛍️ ShopCart',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           if (isWide)
                             Text(
-                              _currentIndex == 0 ? 'Sản phẩm' : 'Giỏ hàng',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              currentIndex == 0 ? 'Sản phẩm' : 'Giỏ hàng',
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           const Spacer(),
                           CartIconWidget(
-                            onTap: () {
-                              setState(() => _currentIndex = 1);
-                            },
+                            onTap: () =>
+                                ref
+                                        .read(navigationIndexProvider.notifier)
+                                        .state =
+                                    1,
                           ),
                         ],
                       ),
                     ),
                   ),
                 ),
-                Expanded(child: _screens[_currentIndex]),
+                Expanded(child: _screens[currentIndex]),
               ],
             ),
           ),
@@ -166,8 +150,9 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: isWide
           ? null
           : NavigationBar(
-              selectedIndex: _currentIndex,
-              onDestinationSelected: (i) => setState(() => _currentIndex = i),
+              selectedIndex: currentIndex,
+              onDestinationSelected: (i) =>
+                  ref.read(navigationIndexProvider.notifier).state = i,
               destinations: const [
                 NavigationDestination(
                   icon: Icon(Icons.store_outlined),

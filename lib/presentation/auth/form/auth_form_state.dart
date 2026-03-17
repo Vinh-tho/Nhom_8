@@ -3,12 +3,14 @@ class AuthFormState {
   final String password;
   final String? emailError;
   final String? passwordError;
+  final bool isLogin;
 
   const AuthFormState({
     this.email = '',
     this.password = '',
     this.emailError,
     this.passwordError,
+    this.isLogin = true,
   });
 
   AuthFormState copyWith({
@@ -16,12 +18,14 @@ class AuthFormState {
     String? password,
     String? emailError,
     String? passwordError,
+    bool? isLogin,
   }) {
     return AuthFormState(
       email: email ?? this.email,
       password: password ?? this.password,
       emailError: emailError,
       passwordError: passwordError,
+      isLogin: isLogin ?? this.isLogin,
     );
   }
 
