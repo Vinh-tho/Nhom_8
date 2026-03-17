@@ -1,38 +1,13 @@
-// =============================================================================
-// PHỎNG VẤN KIẾN THỨC - product_card_widget.dart (Card một sản phẩm trong list)
-// =============================================================================
-//
-//   Q1. onTap mở ProductDetailView(productId) — truyền id thay vì ProductModel vì sao?
-//   A1. Truyền id: màn chi tiết tự load (FutureProvider.family(productId)), có loading/error.
-//       Nếu truyền ProductModel thì không cần load nhưng không có fullDescription từ "server"
-//       và không thống nhất với luồng async. Chi tiết cần id để ref.watch(productDetailViewModelProvider(productId)).
-//
-//   Q2. Hero(tag: 'product_${product.id}') — Hero dùng để làm gì khi chuyển màn?
-//   A2. Hero dùng cho transition: ảnh từ card "bay" sang ảnh trên màn chi tiết (cùng tag).
-//       Flutter tự animate vị trí/kích thước. Tag phải unique (product.id).
-//
-//   Q3. ref.read(cartProvider.notifier).addToCart(product) — read không watch, có rebuild khi giỏ đổi không?
-//   A3. addToCart chỉ gọi action, không subscribe. Widget đã ref.watch(cartProvider.select(...))
-//       isInCart và quantityInCart — khi notifier thay đổi state, những watch đó rebuild
-//       widget. read chỉ để gọi notifier.addToCart; rebuild do watch đảm nhiệm.
-//
-// -----------------------------------------------------------------------------
-// LOGIC TRONG FILE: ConsumerWidget + PriceFormatterMixin. Watch isInCart, quantityInCart.
-//   Card: ảnh Hero, tên, category, giá, nút Thêm vào giỏ. onTap → ProductDetailView(product.id).
-// -----------------------------------------------------------------------------
-// LOGIC TRONG DỰ ÁN: Dùng trong ProductListScreen SliverGrid. Mỗi card một ProductModel từ Repository.
-// -----------------------------------------------------------------------------
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/mixins/price_formatter_mixin.dart';
-import '../../data/models/product_model.dart';
+import '../../domain/entities/product.dart';
 import '../../features/product_detail/views/product_detail_view.dart';
 import '../providers/cart_notifier.dart';
 
 /// ProductCardWidget - Card hiển thị một sản phẩm trong danh sách
 class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
-  final ProductModel product;
+  final Product product;
 
   const ProductCardWidget({super.key, required this.product});
 
@@ -65,7 +40,9 @@ class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
             Expanded(
               flex: 4,
               child: Container(
-                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                color: theme.colorScheme.surfaceContainerHighest.withOpacity(
+                  0.5,
+                ),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -74,13 +51,13 @@ class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
                       child: Image.asset(
                         product.imageUrl,
                         fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Center(
-                        child: Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 48,
-                          color: theme.colorScheme.outline,
+                        errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            size: 48,
+                            color: theme.colorScheme.outline,
+                          ),
                         ),
-                      ),
                       ),
                     ),
                     if (isInCart)
@@ -132,27 +109,27 @@ class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
                         children: [
                           Text(
                             product.name,
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          product.category,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                          const SizedBox(height: 4),
+                          Text(
+                            product.category,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          formatPrice(product.price),
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
+                          const SizedBox(height: 8),
+                          Text(
+                            formatPrice(product.price),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
                           ),
-                        ),
                         ],
                       ),
                     ),
@@ -164,7 +141,9 @@ class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
                           ref.read(cartProvider.notifier).addToCart(product);
                         },
                         icon: Icon(
-                          isInCart ? Icons.add : Icons.add_shopping_cart_rounded,
+                          isInCart
+                              ? Icons.add
+                              : Icons.add_shopping_cart_rounded,
                           size: 18,
                         ),
                         label: Text(isInCart ? 'Thêm nữa' : 'Thêm vào giỏ'),

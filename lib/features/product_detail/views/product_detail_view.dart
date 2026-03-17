@@ -1,28 +1,3 @@
-// =============================================================================
-// PHỎNG VẤN KIẾN THỨC - product_detail_view.dart (Màn chi tiết sản phẩm)
-// =============================================================================
-//
-//   Q1. asyncProduct.when(loading, data, error) — khi nào data nhận null?
-//   A1. Khi FutureProvider trả về null: productId không có trong datasource hoặc productId.isEmpty.
-//       View kiểm tra data: (product) => product == null ? _buildNotFound(context) : _buildContent(...).
-//
-//   Q2. ref.watch(cartProvider.select(...)) isInCart, quantity — màn chi tiết cũng cần đồng bộ với giỏ?
-//   A2. Có. Nút "Thêm vào giỏ" và text "Đã có x trong giỏ" cần isInCart và quantity từ cartProvider.
-//       Watch để khi user thêm từ màn khác hoặc từ chính màn này, UI cập nhật (số lượng, nhãn nút).
-//
-//   Q3. Hero tag 'product_${product.id}' trùng với ProductCardWidget — transition hoạt động thế nào?
-//   A3. Cùng tag trên hai màn: ProductCardWidget (danh sách) và ProductDetailView (chi tiết). Khi
-//       push màn chi tiết, Flutter tìm Hero cùng tag ở destination và animate ảnh từ vị trí card
-//       sang vị trí app bar. Pop lại cũng có transition ngược.
-//
-// -----------------------------------------------------------------------------
-// LOGIC TRONG FILE: ConsumerWidget + PriceFormatterMixin. watch productDetailViewModelProvider(productId),
-//   when(loading/data/error). data: null → notFound; else SliverAppBar + Hero + nội dung + nút Thêm vào giỏ.
-// -----------------------------------------------------------------------------
-// LOGIC TRONG DỰ ÁN: Mở từ ProductCardWidget (tap card). Hiển thị chi tiết từ Repository qua
-//   Service/ViewModel; có thể thêm vào giỏ từ màn này.
-// -----------------------------------------------------------------------------
-
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -83,8 +58,8 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
                   Text(
                     'Đang tải sản phẩm...',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -95,11 +70,7 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
     );
   }
 
-  Widget _buildContent(
-    BuildContext context,
-    WidgetRef ref,
-    ProductModel product,
-  ) {
+  Widget _buildContent(BuildContext context, WidgetRef ref, Product product) {
     final theme = Theme.of(context);
     final isInCart = ref.watch(
       cartProvider.select((s) => s.isInCart(product.id)),
@@ -107,7 +78,9 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
     final quantity = ref.watch(
       cartProvider.select((s) => s.getQuantity(product.id)),
     );
-    final maxWidth = kIsWeb && MediaQuery.of(context).size.width > 800 ? 600.0 : double.infinity;
+    final maxWidth = kIsWeb && MediaQuery.of(context).size.width > 800
+        ? 600.0
+        : double.infinity;
 
     return CustomScrollView(
       slivers: [
@@ -140,7 +113,9 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
             background: Hero(
               tag: 'product_${product.id}',
               child: Container(
-                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                color: theme.colorScheme.surfaceContainerHighest.withOpacity(
+                  0.5,
+                ),
                 child: Image.asset(
                   product.imageUrl,
                   fit: BoxFit.contain,
@@ -167,7 +142,10 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
                   children: [
                     // Danh mục
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(24),
@@ -310,7 +288,9 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
                               .withOpacity(0.6),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: theme.colorScheme.outlineVariant.withOpacity(0.4),
+                            color: theme.colorScheme.outlineVariant.withOpacity(
+                              0.4,
+                            ),
                           ),
                         ),
                         child: _buildDetailText(
@@ -329,7 +309,9 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
                           ref.read(cartProvider.notifier).addToCart(product);
                         },
                         icon: Icon(
-                          isInCart ? Icons.add_rounded : Icons.add_shopping_cart_rounded,
+                          isInCart
+                              ? Icons.add_rounded
+                              : Icons.add_shopping_cart_rounded,
                           size: 22,
                         ),
                         label: Text(

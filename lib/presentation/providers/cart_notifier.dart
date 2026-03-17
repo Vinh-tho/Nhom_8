@@ -1,35 +1,3 @@
-// =============================================================================
-// PHỎNG VẤN KIẾN THỨC - cart_notifier.dart (Riverpod state giỏ hàng)
-// =============================================================================
-//
-//   Q1. Notifier<CartState> khác ChangeNotifier thế nào? Tại sao dùng Notifier?
-//   A1. Notifier là API Riverpod 2.x: build() trả state khởi tạo, methods đổi state trực tiếp.
-//       ChangeNotifier là từ Flutter, phải notifyListeners(). Notifier gọn, tích hợp ref,
-//       autoDispose, test dễ hơn.
-//
-//   Q2. build() return state ban đầu và gọi _loadCart() — _loadCart async, state có kịp cập nhật không?
-//   A2. build() return state isLoading: true; _loadCart() chạy async, khi xong set state =
-//       copyWith(items: loaded, isLoading: false). Widget watch cartProvider sẽ rebuild khi
-//       state đổi, nên lúc load xong UI nhận items. Đúng thứ tự.
-//
-//   Q3. ref.watch(cartProvider.select((s) => s.totalQuantity)) — select có tác dụng gì?
-//   A3. select: chỉ rebuild khi phần được chọn thay đổi. totalQuantity thay đổi khi items/quantity
-//       đổi; nếu chỉ watch totalQuantity thì không rebuild khi selectedProductIds đổi. Giảm rebuild.
-//
-//   Q4. CartState có selectedProductIds — trong UI có dùng cho thanh toán từng phần không?
-//   A4. CartItemWidget dùng isProductSelected để tô nền; toggleSelectProduct có. Hiện thanh toán
-//       dùng totalPrice toàn giỏ (fold tất cả items). Có thể mở rộng: chỉ tính totalPrice cho
-//       item có id trong selectedProductIds.
-//
-// -----------------------------------------------------------------------------
-// LOGIC TRONG FILE: CartState (items, selectedProductIds, isLoading, getters). CartNotifier
-//   with ValidationMixin: build, _loadCart, _saveCart, add/remove/increment/decrement/toggle/clear.
-//   cartProvider = NotifierProvider<CartNotifier, CartState>.
-// -----------------------------------------------------------------------------
-// LOGIC TRONG DỰ ÁN: Toàn app giỏ hàng dùng cartProvider. Widgets watch/read; CartNotifier
-//   persist qua SharedPreferences, load lúc khởi tạo.
-// -----------------------------------------------------------------------------
-
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/mixins/validation_mixin.dart';
 import '../../data/models/product_model.dart';
 import '../../domain/entities/cart_item.dart';
+import '../../domain/entities/product.dart';
 
 // ============================================
 // STATE
@@ -120,9 +89,15 @@ class CartNotifier extends Notifier<CartState> with ValidationMixin {
       List<CartItem> items = [];
       if (cartJson != null && cartJson.isNotEmpty) {
         final List<dynamic> decoded = jsonDecode(cartJson);
-        items = decoded
-            .map((item) => CartItem.fromJson(item as Map<String, dynamic>))
-            .toList();
+        items = decoded.map((item) {
+          final map = item as Map<String, dynamic>;
+          return CartItem(
+            product: ProductModel.fromJson(
+              map['product'] as Map<String, dynamic>,
+            ).toEntity(),
+            quantity: map['quantity'] as int,
+          );
+        }).toList();
       }
 
       state = state.copyWith(items: items, isLoading: false);
@@ -136,7 +111,14 @@ class CartNotifier extends Notifier<CartState> with ValidationMixin {
   Future<void> _saveCart() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final itemsJson = state.items.map((item) => item.toJson()).toList();
+      final itemsJson = state.items
+          .map(
+            (item) => {
+              'product': ProductModel.fromEntity(item.product).toJson(),
+              'quantity': item.quantity,
+            },
+          )
+          .toList();
       await prefs.setString(_cartKey, jsonEncode(itemsJson));
     } catch (e) {
       debugPrint('Error saving cart: $e');
@@ -144,7 +126,7 @@ class CartNotifier extends Notifier<CartState> with ValidationMixin {
   }
 
   // Thêm sản phẩm
-  void addToCart(ProductModel product) {
+  void addToCart(Product product) {
     // Clone list để đảm bảo immutability tuyệt đối
     final currentItems = List<CartItem>.from(state.items);
     final index = currentItems.indexWhere(
