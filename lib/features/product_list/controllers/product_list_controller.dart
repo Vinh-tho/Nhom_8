@@ -2,13 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/repository_providers.dart';
-import '../../../data/repositories/product_repository.dart';
+import '../../../domain/repositories/product_repository.dart';
 import '../models/product_list_state.dart';
 
 class ProductListController extends ChangeNotifier {
   ProductListController(this._repository);
 
-  final ProductRepository _repository;
+  final ProductRepositoryContract _repository;
 
   ProductListState _state = const ProductListState();
   ProductListState get state => _state;

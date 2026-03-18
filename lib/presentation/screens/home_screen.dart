@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/cart/viewmodels/cart_notifier.dart';
+import '../../features/product_detail/views/product_detail_view.dart';
 import '../../features/product_list/views/product_list_view.dart';
 import '../providers/navigation_provider.dart';
 import '../widgets/cart_icon_widget.dart';
@@ -10,11 +12,10 @@ import 'cart_screen.dart';
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  static const List<Widget> _screens = [ProductListView(), CartScreen()];
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(navigationIndexProvider);
+    final cartState = ref.watch(cartProvider);
     final width = MediaQuery.of(context).size.width;
     final isWide = width >= 768 || (kIsWeb && width >= 600);
 
@@ -140,7 +141,25 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                Expanded(child: _screens[currentIndex]),
+                Expanded(
+                  child: currentIndex == 0
+                      ? ProductListView(
+                          isInCart: cartState.isInCart,
+                          quantityInCart: cartState.getQuantity,
+                          onOpenDetail: (product) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    ProductDetailView(productId: product.id),
+                              ),
+                            );
+                          },
+                          onAddToCart: (product) {
+                            ref.read(cartProvider.notifier).addToCart(product);
+                          },
+                        )
+                      : const CartScreen(),
+                ),
               ],
             ),
           ),

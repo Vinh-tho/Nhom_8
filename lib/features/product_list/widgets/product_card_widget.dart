@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/mixins/price_formatter_mixin.dart';
 import '../../../domain/entities/product.dart';
-import '../../cart/viewmodels/cart_notifier.dart';
-import '../../product_detail/views/product_detail_view.dart';
 
 /// ProductCardWidget - Card hiển thị một sản phẩm trong danh sách
-class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
+class ProductCardWidget extends StatelessWidget with PriceFormatterMixin {
   final Product product;
+  final bool isInCart;
+  final int quantityInCart;
+  final VoidCallback onOpenDetail;
+  final VoidCallback onAddToCart;
 
-  const ProductCardWidget({super.key, required this.product});
+  const ProductCardWidget({
+    super.key,
+    required this.product,
+    required this.isInCart,
+    required this.quantityInCart,
+    required this.onOpenDetail,
+    required this.onAddToCart,
+  });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isInCart = ref.watch(
-      cartProvider.select((state) => state.isInCart(product.id)),
-    );
-    final quantityInCart = ref.watch(
-      cartProvider.select((state) => state.getQuantity(product.id)),
-    );
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Card(
@@ -27,13 +29,7 @@ class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
       shadowColor: Colors.black.withValues(alpha: 0.08),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => ProductDetailView(productId: product.id),
-            ),
-          );
-        },
+        onTap: onOpenDetail,
         borderRadius: BorderRadius.circular(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,9 +134,7 @@ class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton.icon(
-                        onPressed: () {
-                          ref.read(cartProvider.notifier).addToCart(product);
-                        },
+                        onPressed: onAddToCart,
                         icon: Icon(
                           isInCart
                               ? Icons.add

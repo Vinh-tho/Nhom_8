@@ -1,12 +1,12 @@
-import '../../../data/repositories/product_repository.dart';
-import '../models/product_model.dart';
+import '../../../domain/repositories/product_repository.dart';
+import '../../../domain/entities/product.dart';
 
 /// ProductDetailService - Service lấy chi tiết sản phẩm (dùng Repository)
 class ProductDetailService {
-  ProductDetailService({required ProductRepository repository})
+  ProductDetailService({required ProductRepositoryContract repository})
     : _repository = repository;
 
-  final ProductRepository _repository;
+  final ProductRepositoryContract _repository;
 
   /// Lấy chi tiết sản phẩm theo ID
   /// Trả về null nếu không tìm thấy

@@ -2,12 +2,24 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../domain/entities/product.dart';
 import '../controllers/product_list_controller.dart';
 import '../widgets/product_card_widget.dart';
 
 /// ProductListView - MVC View cho feature product_list
 class ProductListView extends ConsumerWidget {
-  const ProductListView({super.key});
+  const ProductListView({
+    super.key,
+    required this.isInCart,
+    required this.quantityInCart,
+    required this.onOpenDetail,
+    required this.onAddToCart,
+  });
+
+  final bool Function(String productId) isInCart;
+  final int Function(String productId) quantityInCart;
+  final void Function(Product product) onOpenDetail;
+  final void Function(Product product) onAddToCart;
 
   int _crossAxisCount(double width) {
     if (width >= 1200 || (kIsWeb && width >= 900)) return 4;
@@ -105,11 +117,21 @@ class ProductListView extends ConsumerWidget {
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
                       ),
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) =>
-                            ProductCardWidget(product: products[index]),
-                        childCount: products.length,
-                      ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final product = products[index];
+
+                        return ProductCardWidget(
+                          product: product,
+                          isInCart: isInCart(product.id),
+                          quantityInCart: quantityInCart(product.id),
+                          onOpenDetail: () {
+                            onOpenDetail(product);
+                          },
+                          onAddToCart: () {
+                            onAddToCart(product);
+                          },
+                        );
+                      }, childCount: products.length),
                     ),
                   ),
                   const SliverToBoxAdapter(child: SizedBox(height: 24)),

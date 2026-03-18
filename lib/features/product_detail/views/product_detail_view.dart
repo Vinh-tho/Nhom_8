@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/mixins/price_formatter_mixin.dart';
+import '../../../domain/entities/product.dart';
 import '../../cart/viewmodels/cart_notifier.dart';
-import '../models/product_model.dart';
 import '../viewmodels/product_detail_viewmodel.dart';
 
 /// ProductDetailView - Màn hình chi tiết sản phẩm

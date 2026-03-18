@@ -25,10 +25,11 @@ Thành phần:
 
 Luồng:
 
-1. `ProductListScreen` đọc state từ `productListControllerProvider`.
-2. `ProductListController` gọi `ProductRepository.getAllProducts()`.
+1. `ProductListView` đọc state từ `productListControllerProvider`.
+2. `ProductListController` gọi `ProductRepositoryContract.getAllProducts()`.
 3. Controller cập nhật `ProductListState` (`isLoading`, `products`, `errorMessage`).
-4. View render theo state (loading, error, data).
+4. `HomeScreen` inject callback cho hành động mở chi tiết/thêm giỏ để View không phụ thuộc trực tiếp feature khác.
+5. View render theo state (loading, error, data).
 
 ### 2. MVVM cho Product Detail
 
@@ -37,13 +38,13 @@ Thành phần:
 - View: `lib/features/product_detail/views/product_detail_view.dart`
 - ViewModel: `lib/features/product_detail/viewmodels/product_detail_viewmodel.dart`
 - Service: `lib/features/product_detail/services/product_detail_service.dart`
-- Model dùng cho UI: `Product` (export qua `lib/features/product_detail/models/product_model.dart`)
+- Model dùng cho UI: `Product` (domain entity ở `lib/domain/entities/product.dart`)
 
 Luồng:
 
 1. View gọi `ref.watch(productDetailViewModelProvider(productId))`.
 2. ViewModel gọi Service.
-3. Service gọi Repository.
+3. Service gọi `ProductRepositoryContract`.
 4. Repository trả về `Product?`.
 5. View render theo `AsyncValue<Product?>`.
 
@@ -63,6 +64,7 @@ Các file chính:
 - `lib/presentation/auth/login/login_event.dart`
 - `lib/presentation/auth/login/login_state.dart`
 - `lib/data/repositories/auth_repository.dart`
+- `lib/domain/repositories/auth_repository.dart`
 
 ### Cart bằng Riverpod Notifier
 
@@ -82,6 +84,10 @@ Các file chính:
 
 - DataSource: `lib/data/datasources/fake_product_datasource.dart`
 - Repository: `lib/data/repositories/product_repository.dart`
+
+Abstraction:
+
+- `lib/domain/repositories/product_repository.dart`
 
 `ProductRepository` hiện trả về domain entity `Product`:
 
@@ -113,7 +119,8 @@ lib/
 │   ├── models/
 │   └── repositories/
 ├── domain/
-│   └── entities/
+│   ├── entities/
+│   └── repositories/
 ├── features/
 │   ├── cart/
 │   │   ├── models/
@@ -124,7 +131,6 @@ lib/
 │   │   ├── views/
 │   │   └── widgets/
 │   └── product_detail/
-│       ├── models/
 │       ├── services/
 │       ├── viewmodels/
 │       └── views/

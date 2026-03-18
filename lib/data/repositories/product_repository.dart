@@ -1,9 +1,11 @@
 import '../datasources/fake_product_datasource.dart';
 import '../../domain/entities/product.dart';
+import '../../domain/repositories/product_repository.dart';
 
 /// ProductRepository - Trung gian giữa Data Source và UI/Service
-class ProductRepository {
+class ProductRepository implements ProductRepositoryContract {
   // Lấy tất cả sản phẩm
+  @override
   List<Product> getAllProducts() {
     return FakeProductDataSource.getProducts()
         .map((model) => model.toEntity())
@@ -11,6 +13,7 @@ class ProductRepository {
   }
 
   // Lấy chi tiết sản phẩm theo ID
+  @override
   Product? getProductById(String id) {
     final products = FakeProductDataSource.getProducts();
     try {

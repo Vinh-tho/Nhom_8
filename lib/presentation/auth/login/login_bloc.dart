@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../data/repositories/auth_repository.dart';
+import '../../../domain/repositories/auth_repository.dart';
 import 'login_event.dart';
 import 'login_state.dart';
 
@@ -11,7 +11,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<RegisterRequested>(_onRegisterRequested);
   }
 
-  final AuthRepository _authRepository;
+  final AuthRepositoryContract _authRepository;
 
   Future<void> _onLoginRequested(
     LoginRequested event,
@@ -19,8 +19,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async {
     emit(LoginLoading());
     try {
-      final success =
-          await _authRepository.login(event.email, event.password);
+      final success = await _authRepository.login(event.email, event.password);
       if (success) {
         emit(LoginSuccess());
       } else {
@@ -37,13 +36,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   ) async {
     emit(LoginLoading());
     try {
-      final success =
-          await _authRepository.register(event.email, event.password);
+      final success = await _authRepository.register(
+        event.email,
+        event.password,
+      );
       if (success) {
         emit(LoginSuccess());
       } else {
-        emit(LoginFailure(
-            message: 'Đăng ký thất bại. Email hợp lệ, mật khẩu >= 6 ký tự'));
+        emit(
+          LoginFailure(
+            message: 'Đăng ký thất bại. Email hợp lệ, mật khẩu >= 6 ký tự',
+          ),
+        );
       }
     } catch (e) {
       emit(LoginFailure(message: e.toString()));

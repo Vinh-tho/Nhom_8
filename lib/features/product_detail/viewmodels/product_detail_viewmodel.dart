@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/repository_providers.dart';
-import '../models/product_model.dart';
+import '../../../domain/entities/product.dart';
 import '../services/product_detail_service.dart';
 
 final productDetailServiceProvider = Provider<ProductDetailService>((ref) {
