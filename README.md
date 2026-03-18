@@ -19,7 +19,7 @@ Dự án đang chuẩn hóa theo 2 kiến trúc chính cho đề tài:
 
 Thành phần:
 
-- View: `lib/presentation/screens/product_list_screen.dart`
+- View: `lib/features/product_list/views/product_list_view.dart`
 - Controller: `lib/features/product_list/controllers/product_list_controller.dart`
 - Model: `lib/features/product_list/models/product_list_state.dart`, `lib/domain/entities/product.dart`
 
@@ -68,14 +68,15 @@ Các file chính:
 
 - `CartNotifier` quản lý `CartState`.
 - `CartState` chứa `List<CartItem>` với `CartItem.product` là `Product` domain entity.
-- Lưu trữ giỏ hàng: map `Product <-> ProductModel` khi serialize/deserialize.
+- Lưu trữ giỏ hàng qua `CartRepository` abstraction ở Domain.
+- Data layer dùng `SharedPrefsCartRepository` để map `Product <-> ProductModel` khi serialize/deserialize.
 
 Các file chính:
 
-- `lib/presentation/providers/cart_notifier.dart`
-- `lib/domain/entities/cart_item.dart`
-- `lib/domain/entities/product.dart`
-- `lib/data/models/product_model.dart`
+- `lib/features/cart/viewmodels/cart_notifier.dart`
+- `lib/features/cart/models/cart_state.dart`
+- `lib/domain/repositories/cart_repository.dart`
+- `lib/data/repositories/shared_prefs_cart_repository.dart`
 
 ### Data layer
 
@@ -114,9 +115,14 @@ lib/
 ├── domain/
 │   └── entities/
 ├── features/
+│   ├── cart/
+│   │   ├── models/
+│   │   └── viewmodels/
 │   ├── product_list/
 │   │   ├── controllers/
-│   │   └── models/
+│   │   ├── models/
+│   │   ├── views/
+│   │   └── widgets/
 │   └── product_detail/
 │       ├── models/
 │       ├── services/

@@ -15,11 +15,12 @@ class ProductListState {
     bool? isLoading,
     List<Product>? products,
     String? errorMessage,
+    bool clearError = false,
   }) {
     return ProductListState(
       isLoading: isLoading ?? this.isLoading,
       products: products ?? this.products,
-      errorMessage: errorMessage,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 }

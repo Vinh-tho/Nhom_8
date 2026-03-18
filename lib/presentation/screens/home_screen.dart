@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/product_list/views/product_list_view.dart';
 import '../providers/navigation_provider.dart';
 import '../widgets/cart_icon_widget.dart';
-import 'product_list_screen.dart';
 import 'cart_screen.dart';
 
 /// HomeScreen - Màn hình chính sau đăng nhập (2 tab: Sản phẩm, Giỏ hàng)
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
-  static const List<Widget> _screens = [ProductListScreen(), CartScreen()];
+  static const List<Widget> _screens = [ProductListView(), CartScreen()];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,7 +29,7 @@ class HomeScreen extends ConsumerWidget {
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 8,
                     offset: const Offset(1, 0),
                   ),
@@ -100,7 +100,7 @@ class HomeScreen extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.surface,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),

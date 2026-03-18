@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/mixins/price_formatter_mixin.dart';
 import '../../domain/entities/cart_item.dart';
-import '../providers/cart_notifier.dart';
+import '../../features/cart/viewmodels/cart_notifier.dart';
 
 /// CartItemWidget - Một dòng sản phẩm trong giỏ (checkbox, ảnh, giá, +/-)
 class CartItemWidget extends ConsumerWidget with PriceFormatterMixin {
@@ -22,10 +22,14 @@ class CartItemWidget extends ConsumerWidget with PriceFormatterMixin {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       clipBehavior: Clip.antiAlias,
-      color: isSelected ? theme.colorScheme.primaryContainer.withOpacity(0.4) : null,
+      color: isSelected
+          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4)
+          : null,
       child: InkWell(
         onTap: () {
-          ref.read(cartProvider.notifier).toggleSelectProduct(cartItem.product.id);
+          ref
+              .read(cartProvider.notifier)
+              .toggleSelectProduct(cartItem.product.id);
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -35,7 +39,9 @@ class CartItemWidget extends ConsumerWidget with PriceFormatterMixin {
               Checkbox(
                 value: isSelected,
                 onChanged: (_) {
-                  ref.read(cartProvider.notifier).toggleSelectProduct(cartItem.product.id);
+                  ref
+                      .read(cartProvider.notifier)
+                      .toggleSelectProduct(cartItem.product.id);
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6),
@@ -54,7 +60,7 @@ class CartItemWidget extends ConsumerWidget with PriceFormatterMixin {
                   child: Image.asset(
                     cartItem.product.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Icon(
+                    errorBuilder: (context, error, stackTrace) => Icon(
                       Icons.image_outlined,
                       color: theme.colorScheme.outline,
                     ),
@@ -96,12 +102,15 @@ class CartItemWidget extends ConsumerWidget with PriceFormatterMixin {
                 children: [
                   IconButton(
                     onPressed: () {
-                      ref.read(cartProvider.notifier).removeFromCart(cartItem.product.id);
+                      ref
+                          .read(cartProvider.notifier)
+                          .removeFromCart(cartItem.product.id);
                     },
                     icon: const Icon(Icons.delete_outline),
                     color: theme.colorScheme.error,
                     style: IconButton.styleFrom(
-                      backgroundColor: theme.colorScheme.errorContainer.withOpacity(0.5),
+                      backgroundColor: theme.colorScheme.errorContainer
+                          .withValues(alpha: 0.5),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -117,7 +126,9 @@ class CartItemWidget extends ConsumerWidget with PriceFormatterMixin {
                       children: [
                         IconButton(
                           onPressed: () {
-                            ref.read(cartProvider.notifier).decrementQuantity(cartItem.product.id);
+                            ref
+                                .read(cartProvider.notifier)
+                                .decrementQuantity(cartItem.product.id);
                           },
                           icon: const Icon(Icons.remove, size: 18),
                           constraints: const BoxConstraints(
@@ -135,7 +146,9 @@ class CartItemWidget extends ConsumerWidget with PriceFormatterMixin {
                         ),
                         IconButton(
                           onPressed: () {
-                            ref.read(cartProvider.notifier).incrementQuantity(cartItem.product.id);
+                            ref
+                                .read(cartProvider.notifier)
+                                .incrementQuantity(cartItem.product.id);
                           },
                           icon: const Icon(Icons.add, size: 18),
                           constraints: const BoxConstraints(

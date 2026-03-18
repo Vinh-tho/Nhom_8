@@ -26,10 +26,13 @@ class AuthScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: isDark
-                ? [colorScheme.surface, colorScheme.surface.withOpacity(0.95)]
+                ? [
+                    colorScheme.surface,
+                    colorScheme.surface.withValues(alpha: 0.95),
+                  ]
                 : [
-                    colorScheme.primaryContainer.withOpacity(0.4),
-                    colorScheme.secondaryContainer.withOpacity(0.3),
+                    colorScheme.primaryContainer.withValues(alpha: 0.4),
+                    colorScheme.secondaryContainer.withValues(alpha: 0.3),
                   ],
           ),
         ),
@@ -54,11 +57,13 @@ class AuthScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: colorScheme.primary.withOpacity(0.15),
+                            color: colorScheme.primary.withValues(alpha: 0.15),
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: colorScheme.primary.withOpacity(0.2),
+                                color: colorScheme.primary.withValues(
+                                  alpha: 0.2,
+                                ),
                                 blurRadius: 24,
                                 spreadRadius: 2,
                               ),
@@ -99,12 +104,14 @@ class AuthScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(24),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.06),
+                                color: Colors.black.withValues(alpha: 0.06),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
                               BoxShadow(
-                                color: colorScheme.primary.withOpacity(0.05),
+                                color: colorScheme.primary.withValues(
+                                  alpha: 0.05,
+                                ),
                                 blurRadius: 40,
                                 offset: const Offset(0, 4),
                               ),
@@ -121,7 +128,7 @@ class AuthScreen extends StatelessWidget {
                                     padding: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
                                       color: colorScheme.surfaceContainerHighest
-                                          .withOpacity(0.5),
+                                          .withValues(alpha: 0.5),
                                       borderRadius: BorderRadius.circular(14),
                                     ),
                                     child: Row(
@@ -264,7 +271,7 @@ class AuthScreen extends StatelessWidget {
                                                 ?.copyWith(
                                                   color: colorScheme
                                                       .onSurfaceVariant
-                                                      .withOpacity(0.7),
+                                                      .withValues(alpha: 0.7),
                                                 ),
                                             textAlign: TextAlign.center,
                                           ),
@@ -340,7 +347,7 @@ class AuthScreen extends StatelessWidget {
             boxShadow: selected
                 ? [
                     BoxShadow(
-                      color: colorScheme.primary.withOpacity(0.3),
+                      color: colorScheme.primary.withValues(alpha: 0.3),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -391,10 +398,10 @@ class AuthScreen extends StatelessWidget {
           size: 22,
           color: hasError
               ? colorScheme.error
-              : colorScheme.onSurfaceVariant.withOpacity(0.7),
+              : colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
         ),
         filled: true,
-        fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        fillColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
@@ -403,8 +410,8 @@ class AuthScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
             color: hasError
-                ? colorScheme.error.withOpacity(0.5)
-                : colorScheme.outlineVariant.withOpacity(0.5),
+                ? colorScheme.error.withValues(alpha: 0.5)
+                : colorScheme.outlineVariant.withValues(alpha: 0.5),
             width: 1,
           ),
         ),
@@ -436,9 +443,9 @@ class AuthScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: colorScheme.errorContainer.withOpacity(0.8),
+        color: colorScheme.errorContainer.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.error.withOpacity(0.3)),
+        border: Border.all(color: colorScheme.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [

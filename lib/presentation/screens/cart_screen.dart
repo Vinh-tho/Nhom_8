@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/services/cart_service.dart';
-import '../providers/cart_notifier.dart';
+import '../../features/cart/viewmodels/cart_notifier.dart';
 import '../widgets/cart_item_widget.dart';
 import '../widgets/cart_total_widget.dart';
 
@@ -49,8 +48,8 @@ class CartScreen extends ConsumerWidget {
                     child: Text(
                       '$itemCount loại • $totalQuantity sản phẩm',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   TextButton.icon(
@@ -151,9 +150,7 @@ class CartScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Xóa giỏ hàng?'),
         content: const Text(
           'Bạn có chắc muốn xóa tất cả sản phẩm trong giỏ hàng?',
@@ -172,20 +169,6 @@ class CartScreen extends ConsumerWidget {
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
             child: const Text('Xóa tất cả'),
-          ),
-          TextButton(
-            onPressed: () {
-              final service = ref.read(cartServiceProvider);
-              service.printCartTotal();
-              service.clearCartFromService();
-              Navigator.pop(ctx);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Test CartService')),
-                );
-              }
-            },
-            child: const Text('Test Service'),
           ),
         ],
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/mixins/price_formatter_mixin.dart';
-import '../providers/cart_notifier.dart';
+import '../../features/cart/viewmodels/cart_notifier.dart';
 
 /// CartTotalWidget - Footer tổng tiền và nút thanh toán
 class CartTotalWidget extends ConsumerWidget with PriceFormatterMixin {
@@ -20,7 +20,7 @@ class CartTotalWidget extends ConsumerWidget with PriceFormatterMixin {
         color: theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, -4),
           ),
@@ -70,7 +70,10 @@ class CartTotalWidget extends ConsumerWidget with PriceFormatterMixin {
               icon: const Icon(Icons.payment_rounded),
               label: const Text('Thanh toán'),
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 16,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

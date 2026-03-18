@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/mixins/price_formatter_mixin.dart';
-import '../../../presentation/providers/cart_notifier.dart';
+import '../../cart/viewmodels/cart_notifier.dart';
 import '../models/product_model.dart';
 import '../viewmodels/product_detail_viewmodel.dart';
 
@@ -92,11 +92,11 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
             icon: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surface.withOpacity(0.9),
+                color: theme.colorScheme.surface.withValues(alpha: 0.9),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 8,
                   ),
                 ],
@@ -113,13 +113,13 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
             background: Hero(
               tag: 'product_${product.id}',
               child: Container(
-                color: theme.colorScheme.surfaceContainerHighest.withOpacity(
-                  0.5,
+                color: theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
                 ),
                 child: Image.asset(
                   product.imageUrl,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => Center(
+                  errorBuilder: (context, error, stackTrace) => Center(
                     child: Icon(
                       Icons.image_not_supported_outlined,
                       size: 80,
@@ -178,8 +178,12 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primaryContainer.withOpacity(0.5),
-                            theme.colorScheme.primaryContainer.withOpacity(0.2),
+                            theme.colorScheme.primaryContainer.withValues(
+                              alpha: 0.5,
+                            ),
+                            theme.colorScheme.primaryContainer.withValues(
+                              alpha: 0.2,
+                            ),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -216,7 +220,7 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.green.withOpacity(0.2),
+                                  color: Colors.green.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Row(
@@ -285,11 +289,11 @@ class ProductDetailView extends ConsumerWidget with PriceFormatterMixin {
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest
-                              .withOpacity(0.6),
+                              .withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: theme.colorScheme.outlineVariant.withOpacity(
-                              0.4,
+                            color: theme.colorScheme.outlineVariant.withValues(
+                              alpha: 0.4,
                             ),
                           ),
                         ),

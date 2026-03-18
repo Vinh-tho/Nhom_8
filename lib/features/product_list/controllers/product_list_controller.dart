@@ -14,7 +14,7 @@ class ProductListController extends ChangeNotifier {
   ProductListState get state => _state;
 
   Future<void> loadProducts() async {
-    _state = _state.copyWith(isLoading: true, errorMessage: null);
+    _state = _state.copyWith(isLoading: true, clearError: true);
     notifyListeners();
 
     try {
@@ -22,12 +22,12 @@ class ProductListController extends ChangeNotifier {
       _state = _state.copyWith(
         isLoading: false,
         products: products,
-        errorMessage: null,
+        clearError: true,
       );
     } catch (_) {
       _state = _state.copyWith(
         isLoading: false,
-        errorMessage: 'Khong the tai danh sach san pham.',
+        errorMessage: 'Không thể tải danh sách sản phẩm.',
       );
     }
 

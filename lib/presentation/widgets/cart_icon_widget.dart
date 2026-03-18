@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/cart_notifier.dart';
+import '../../features/cart/viewmodels/cart_notifier.dart';
 
 /// CartIconWidget - Icon giỏ hàng + badge tổng số lượng
 class CartIconWidget extends StatelessWidget {
@@ -25,7 +25,9 @@ class CartIconWidget extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: totalQuantity > 0
-                  ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6)
+                  ? Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer.withValues(alpha: 0.6)
                   : null,
               borderRadius: BorderRadius.circular(12),
             ),

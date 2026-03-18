@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/mixins/price_formatter_mixin.dart';
-import '../../domain/entities/product.dart';
-import '../../features/product_detail/views/product_detail_view.dart';
-import '../providers/cart_notifier.dart';
+
+import '../../../core/mixins/price_formatter_mixin.dart';
+import '../../../domain/entities/product.dart';
+import '../../cart/viewmodels/cart_notifier.dart';
+import '../../product_detail/views/product_detail_view.dart';
 
 /// ProductCardWidget - Card hiển thị một sản phẩm trong danh sách
 class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
@@ -23,7 +24,7 @@ class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
 
     return Card(
       elevation: 2,
-      shadowColor: Colors.black.withOpacity(0.08),
+      shadowColor: Colors.black.withValues(alpha: 0.08),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
@@ -40,8 +41,8 @@ class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
             Expanded(
               flex: 4,
               child: Container(
-                color: theme.colorScheme.surfaceContainerHighest.withOpacity(
-                  0.5,
+                color: theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.5,
                 ),
                 child: Stack(
                   fit: StackFit.expand,
@@ -51,7 +52,7 @@ class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
                       child: Image.asset(
                         product.imageUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Center(
+                        errorBuilder: (context, error, stackTrace) => Center(
                           child: Icon(
                             Icons.image_not_supported_outlined,
                             size: 48,
@@ -74,7 +75,7 @@ class ProductCardWidget extends ConsumerWidget with PriceFormatterMixin {
                             borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withValues(alpha: 0.2),
                                 blurRadius: 4,
                               ),
                             ],

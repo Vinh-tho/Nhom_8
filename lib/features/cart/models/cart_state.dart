@@ -1,4 +1,4 @@
-import '../../domain/entities/cart_item.dart';
+import '../../../domain/entities/cart_item.dart';
 
 /// CartState - MVVM Model: Immutable state cho giỏ hàng
 class CartState {
@@ -24,7 +24,6 @@ class CartState {
     );
   }
 
-  // Getters cho UI
   int get totalQuantity {
     if (items.isEmpty) return 0;
     return items.fold(0, (sum, item) => sum + item.quantity);
